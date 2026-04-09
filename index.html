@@ -258,6 +258,11 @@
       Events
       <span class="nav-count">2</span>
     </a>
+    <a class="nav-link" onclick="showTab('tulsa')">
+      <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Tulsa Event
+      <span class="nav-count" style="background:var(--red-bg);color:var(--red-text);font-weight:600">15d</span>
+    </a>
     <a class="nav-link" onclick="showTab('pipeline')">
       <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       Pipeline
@@ -315,6 +320,7 @@
     <div class="tab" onclick="showTab('team')">Team</div>
     <div class="tab" onclick="showTab('sequences')">Sequences</div>
     <div class="tab" onclick="showTab('events')">Events</div>
+    <div class="tab" onclick="showTab('tulsa')" style="color:var(--red)">Tulsa &#x26A0;</div>
     <div class="tab" onclick="showTab('pipeline')">Pipeline</div>
     <div class="tab" onclick="showTab('contacts')">Contacts</div>
     <div class="tab" onclick="showTab('actions')">Actions</div>
@@ -672,6 +678,101 @@
     </div>
   </div>
  
+  <!-- ========== TULSA EVENT TAB ========== -->
+  <div class="content tab-panel" id="tab-tulsa">
+
+    <div class="alert" style="background:#fef2f2;border-color:#fecaca;color:#991b1b;margin-bottom:20px">
+      <span>&#x1F6A8;</span>
+      <div><strong>CRITICAL — 15 days out:</strong> The Modern Medicine Symposium is April 24-26. You have <strong>170 contacts tagged for Tulsa</strong> in HubSpot — 70 HOT, 81 WARM — and <strong>not a single one has been emailed.</strong> They were tagged but never enrolled in a sequence. This is why attendance is low. The fix: approve the 2-email urgent sequence below and enrollment can begin today.</div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="stat-label">Days Until Event</div><div class="stat-num c-red">15</div><div class="stat-sub">April 24-26 &middot; Hyatt Regency Tulsa</div></div>
+      <div class="stat"><div class="stat-label">Tulsa-Tagged Contacts</div><div class="stat-num c-purple">170</div><div class="stat-sub">Total in HubSpot with target_event=Tulsa</div></div>
+      <div class="stat"><div class="stat-label">HOT — Not Contacted</div><div class="stat-num c-red">70</div><div class="stat-sub">0 emailed &middot; 0 enrolled &middot; All status NEW</div></div>
+      <div class="stat"><div class="stat-label">WARM — Not Contacted</div><div class="stat-num c-amber">81</div><div class="stat-sub">0 emailed &middot; 0 enrolled &middot; All status NEW</div></div>
+      <div class="stat"><div class="stat-label">Confirmed Attendees</div><div class="stat-num c-muted">0</div><div class="stat-sub">No registrations tracked in HubSpot</div></div>
+      <div class="stat"><div class="stat-label">Replies / Connected</div><div class="stat-num c-muted">0</div><div class="stat-sub">No engagement — nobody reached</div></div>
+    </div>
+
+    <div class="grid-2">
+      <!-- Why is attendance low -->
+      <div class="card">
+        <div class="card-head"><h3>Why Attendance is Low</h3><span class="badge b-red">Root Cause Found</span></div>
+        <div style="padding:16px;font-size:13px;color:var(--text-secondary);line-height:1.8">
+          <p style="margin-bottom:12px">Your 170 Tulsa contacts were properly identified and tagged in HubSpot (<code style="font-size:11px;background:var(--bg);padding:1px 5px;border-radius:3px">target_event=Tulsa</code>), but were <strong style="color:var(--red-text)">never enrolled in any sequence</strong>.</p>
+          <p style="margin-bottom:12px">The 524 contacts currently in sequences were enrolled from a different contact pool — they were NOT filtered by the Tulsa tag. The two groups never overlapped.</p>
+          <p style="margin-bottom:12px">Result: Your highest-priority Tulsa prospects sat untouched while generic outreach went to a different audience.</p>
+          <p><strong>The fix is straightforward</strong> — approve the 2-email sequence below and the 70 HOT contacts can be enrolled today. WARM contacts follow on Day 3.</p>
+        </div>
+        <div style="padding:10px 16px;border-top:1px solid var(--border-light);background:#fafbfd;font-size:12px;color:var(--red-text);font-weight:500">
+          &#x26A0; Sequence approval needed before enrollment can begin
+        </div>
+      </div>
+
+      <!-- Priority breakdown -->
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="card">
+          <div class="card-head"><h3>Tulsa Contact Breakdown</h3></div>
+          <div class="bar-group">
+            <div class="bar-item"><div class="bar-top"><span>HOT — immediate priority</span><span style="color:var(--red);font-weight:600">70</span></div><div class="bar-track"><div class="bar-fill" style="width:41%;background:var(--red)"></div></div></div>
+            <div class="bar-item"><div class="bar-top"><span>WARM — strong prospects</span><span style="color:var(--amber);font-weight:600">81</span></div><div class="bar-track"><div class="bar-fill" style="width:47.6%;background:var(--amber)"></div></div></div>
+            <div class="bar-item"><div class="bar-top"><span>COLD / Unset</span><span style="color:var(--text-muted)">19</span></div><div class="bar-track"><div class="bar-fill" style="width:11%;background:#d1d5db"></div></div></div>
+            <div class="bar-item" style="margin-top:8px"><div class="bar-top"><span style="color:var(--red)">Emailed</span><span style="color:var(--red);font-weight:700">0 of 170</span></div><div class="bar-track"><div class="bar-fill" style="width:0%;background:var(--red)"></div></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Proposed Sequence (Awaiting Approval)</h3><span class="badge b-amber">Needs Sign-off</span></div>
+          <div class="wf" style="padding:12px 16px">
+            <div class="wf-step"><div class="wf-num" style="background:var(--red-bg);border-color:var(--red);color:var(--red-text)">1</div><div class="wf-text"><strong>Email 1 — Today:</strong> Personal Tulsa invite. Urgency framing, warm peer tone. HOT contacts first.</div></div>
+            <div class="wf-step"><div class="wf-num" style="background:var(--amber-bg);border-color:var(--amber);color:var(--amber-text)">2</div><div class="wf-text"><strong>Email 2 — Day 5:</strong> Final follow-up. Offer Zoom option if they can't make it in person.</div></div>
+          </div>
+          <div style="padding:10px 16px;border-top:1px solid var(--border-light);font-size:12px;color:var(--text-muted)">
+            Say <em>"approve the Tulsa sequence"</em> to get the full email copy drafted for your review.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HOT contacts table -->
+    <div class="card" style="margin-top:4px">
+      <div class="card-head"><h3>HOT Contacts — Never Contacted</h3><span class="badge b-red">70 Total &middot; All Uncontacted</span></div>
+      <div class="tbl-head" style="grid-template-columns:2fr 2fr 1fr 1fr; display:grid;">
+        <span class="tbl-cell">Name</span><span class="tbl-cell">Practice</span><span class="tbl-cell">Priority</span><span class="tbl-cell">Status</span>
+      </div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462195019469" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Okey Okonkwo</a></span><span class="tbl-cell">Okey Weight Management</span><span class="tbl-cell"><span class="badge b-green">HOT</span></span><span class="tbl-cell"><span class="badge b-gray">Never Emailed</span></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462222578420" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Lana Vanzant</a></span><span class="tbl-cell">Longevity</span><span class="tbl-cell"><span class="badge b-green">HOT</span></span><span class="tbl-cell"><span class="badge b-gray">Never Emailed</span></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462220486362" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Stanton Hansen</a></span><span class="tbl-cell">Helix Spine &amp; Sport</span><span class="tbl-cell"><span class="badge b-green">HOT</span></span><span class="tbl-cell"><span class="badge b-gray">Never Emailed</span></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462222809832" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Dawn Feland</a></span><span class="tbl-cell">Full Circle Health Clinic</span><span class="tbl-cell"><span class="badge b-green">HOT</span></span><span class="tbl-cell"><span class="badge b-gray">Never Emailed</span></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462263470779" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Philip M. Gray</a></span><span class="tbl-cell">Gray Dental Group</span><span class="tbl-cell"><span class="badge b-green">HOT</span></span><span class="tbl-cell"><span class="badge b-gray">Never Emailed</span></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462263857884" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">John Fullington</a></span><span class="tbl-cell">Redeemed Smiles</span><span class="tbl-cell"><span class="badge b-green">HOT</span></span><span class="tbl-cell"><span class="badge b-gray">Never Emailed</span></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462263857877" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Stephen M. Taylor</a></span><span class="tbl-cell">Taylor Dental Implant Ctr</span><span class="tbl-cell"><span class="badge b-green">HOT</span></span><span class="tbl-cell"><span class="badge b-gray">Never Emailed</span></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462263669480" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Darek Ridpath</a></span><span class="tbl-cell">Choctaw Family Dentist</span><span class="tbl-cell"><span class="badge b-green">HOT</span></span><span class="tbl-cell"><span class="badge b-gray">Never Emailed</span></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462222079711" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Ace Med Spa</a></span><span class="tbl-cell">Ace Med Spa (general inbox)</span><span class="tbl-cell"><span class="badge b-green">HOT</span></span><span class="tbl-cell"><span class="badge b-amber">Bad First Name</span></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462220485358" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">The Tooth Experience</a></span><span class="tbl-cell">The Tooth Experience</span><span class="tbl-cell"><span class="badge b-green">HOT</span></span><span class="tbl-cell"><span class="badge b-amber">Bad First Name</span></span></div>
+      <div style="padding:10px 16px;font-size:12px;color:var(--text-muted);border-top:1px solid var(--border-light)">
+        Showing 10 of 70 HOT contacts &middot; Names link directly to HubSpot records &middot; <span style="color:var(--amber-text)">&#x26A0; Several contacts have "there" as first name — fix before sending</span>
+      </div>
+      <div class="hs-links-bar">
+        <a class="hs-link" href="https://app.hubspot.com/contacts/245216884/objects/0-1/views/all/list?query=target_event%3ATulsa" target="_blank"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg> All Tulsa Contacts</a>
+        <a class="hs-link" href="https://app.hubspot.com/sequences/245216884" target="_blank"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg> HubSpot Sequences</a>
+        <a class="hs-link" href="https://app.hubspot.com/workflows/245216884" target="_blank"><svg viewBox="0 0 24 24"><path d="M14 4l2.29 2.29-2.88 2.88 1.42 1.42 2.88-2.88L20 10V4zm-4 0H4v6l2.29-2.29 4.71 4.7V20h2v-8.41l-5.29-5.3z"/></svg> Workflows</a>
+      </div>
+    </div>
+
+    <!-- Action items -->
+    <div class="card" style="margin-top:16px">
+      <div class="card-head"><h3>Tulsa Action Items</h3><span class="badge b-red">Urgent — 15 Days</span></div>
+      <div class="action-row"><div class="action-bar" style="background:var(--red)"></div><span class="action-text"><strong>TODAY:</strong> Approve the 2-email Tulsa sequence so HOT contacts can be enrolled immediately. Say "draft the Tulsa sequence" to get the copy.</span><span class="action-owner o-you">You</span></div>
+      <div class="action-row"><div class="action-bar" style="background:var(--red)"></div><span class="action-text">Fix "there" first names on ~10 HOT contacts before sending — emails will look broken</span><span class="action-owner o-sales">RevOps</span></div>
+      <div class="action-row"><div class="action-bar" style="background:var(--amber)"></div><span class="action-text">After HOT contacts are enrolled (Day 1), enroll 81 WARM contacts in the same sequence</span><span class="action-owner o-sales">Sales Ops</span></div>
+      <div class="action-row"><div class="action-bar" style="background:var(--amber)"></div><span class="action-text">Lucy Smith (lucy@drlucysmith.com) — was OOO through Apr 8, now back. Send personal follow-up.</span><span class="action-owner o-sales">Sales Ops</span></div>
+      <div class="action-row"><div class="action-bar" style="background:var(--blue)"></div><span class="action-text">Turn OFF the Tulsa Event follow-up HubSpot workflow — it was creating duplicate tasks</span><span class="action-owner o-intel">RevOps</span></div>
+      <div class="action-row"><div class="action-bar" style="background:var(--blue)"></div><span class="action-text">Confirm Salesforce exclusions before enrollment — McGDerm and any other BTL accounts must be excluded</span><span class="action-owner o-you">You</span></div>
+    </div>
+
+  </div>
+
 </div><!-- /main -->
 </div><!-- /layout -->
  
@@ -692,7 +793,8 @@ function showTab(name) {
         (name === 'contacts' && t.textContent.trim() === 'Contacts') ||
         (name === 'actions' && t.textContent.trim() === 'Actions') ||
         (name === 'setup' && t.textContent.trim() === 'Setup') ||
-        (name === 'guardrails' && t.textContent.trim() === 'Guardrails'))
+        (name === 'guardrails' && t.textContent.trim() === 'Guardrails') ||
+        (name === 'tulsa' && t.textContent.trim().startsWith('Tulsa')))
       t.classList.add('active');
   });
   document.querySelectorAll('.nav-link').forEach(n => {
