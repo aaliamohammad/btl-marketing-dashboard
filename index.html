@@ -21,12 +21,13 @@
       --amber-bg: #fffbeb;
       --amber-text: #92400e;
       --blue: #0570de;
+      --blue-bg: #eff6ff;
       --purple-bg: #f5f3ff;
-      --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
       --radius: 8px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
       background: var(--bg);
@@ -62,11 +63,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 700;
-      font-size: 12px;
       color: #fff;
+      font-size: 12px;
+      font-weight: 700;
     }
     .brand-name { font-size: 14px; font-weight: 600; }
+
     .nav-group { padding: 12px 8px 4px; }
     .nav-group-label {
       font-size: 11px;
@@ -84,6 +86,7 @@
       border-radius: 6px;
       font-size: 13px;
       color: var(--text-secondary);
+      cursor: pointer;
       text-decoration: none;
     }
     .nav-link:hover { background: var(--bg); color: var(--text-primary); }
@@ -110,7 +113,7 @@
       font-weight: 600;
     }
     .user-meta strong { display: block; font-size: 12px; }
-    .user-meta span { color: var(--text-muted); font-size: 11px; }
+    .user-meta span { font-size: 11px; color: var(--text-muted); }
 
     .main { margin-left: 220px; flex: 1; }
     .top-header {
@@ -125,10 +128,9 @@
       z-index: 10;
     }
     .top-left h1 { font-size: 18px; font-weight: 600; }
-    .top-left p { color: var(--text-muted); font-size: 12px; margin-top: 1px; }
-
+    .top-left p { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
     .status-pill {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 6px;
       font-size: 12px;
@@ -140,10 +142,34 @@
     }
     .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
 
+    .tabs-bar {
+      background: var(--bg-white);
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px;
+      display: flex;
+      overflow-x: auto;
+      position: sticky;
+      top: 57px;
+      z-index: 9;
+    }
+    .tab {
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+    }
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
     .content { padding: 24px 28px; max-width: 1160px; }
+    .tab-panel { display: none; }
+    .tab-panel.visible { display: block; }
 
     .alert {
       display: flex;
+      align-items: flex-start;
       gap: 10px;
       background: var(--amber-bg);
       border: 1px solid #fde68a;
@@ -171,7 +197,7 @@
     .stat-num { font-size: 24px; font-weight: 700; }
     .stat-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
 
-    .grid-2 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; margin-bottom: 20px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
 
     .card {
       background: var(--bg-white);
@@ -192,45 +218,47 @@
     .row {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       gap: 10px;
       padding: 10px 16px;
       border-bottom: 1px solid var(--border-light);
       font-size: 13px;
-      align-items: center;
     }
     .row:last-child { border-bottom: none; }
-    .row .meta { color: var(--text-muted); font-size: 12px; }
+    .meta { font-size: 11px; color: var(--text-muted); }
 
     .pill {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 600;
-      border-radius: 999px;
       padding: 2px 8px;
-      white-space: nowrap;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
     }
     .p-green { background: var(--green-bg); color: var(--green-text); }
     .p-amber { background: var(--amber-bg); color: var(--amber-text); }
-    .p-blue { background: #eff6ff; color: var(--blue); }
+    .p-blue { background: var(--blue-bg); color: var(--blue); }
+    .p-purple { background: var(--purple-bg); color: var(--accent); }
 
-    .links {
+    .hs-links {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      padding: 14px 16px;
+      padding: 10px 16px;
       border-top: 1px solid var(--border-light);
       background: #fafbfd;
     }
     .hs-link {
       display: inline-flex;
       align-items: center;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
       color: #e0563c;
       text-decoration: none;
-      background: #fff5f2;
       border: 1px solid #ffd4c8;
+      background: #fff5f2;
       border-radius: 6px;
-      padding: 6px 10px;
+      padding: 5px 10px;
     }
 
     @media (max-width: 960px) {
@@ -242,7 +270,7 @@
 </head>
 <body>
   <div class="layout">
-    <aside class="sidebar">
+    <nav class="sidebar">
       <div class="sidebar-brand">
         <div class="brand-icon">B</div>
         <div class="brand-name">BTL Command Center</div>
@@ -250,45 +278,58 @@
 
       <div class="nav-group">
         <div class="nav-group-label">Overview</div>
-        <a class="nav-link active" href="#">Dashboard</a>
-        <a class="nav-link" href="#">Team</a>
+        <a class="nav-link active" onclick="showTab('overview')">Dashboard</a>
+        <a class="nav-link" onclick="showTab('team')">Team</a>
       </div>
 
       <div class="nav-group">
         <div class="nav-group-label">Campaigns</div>
-        <a class="nav-link" href="#">Sequences</a>
-        <a class="nav-link" href="#">Events</a>
-        <a class="nav-link" href="#">Pipeline</a>
+        <a class="nav-link" onclick="showTab('sequences')">Sequences</a>
+        <a class="nav-link" onclick="showTab('events')">Events</a>
+        <a class="nav-link" onclick="showTab('pipeline')">Pipeline</a>
       </div>
 
       <div class="nav-group">
         <div class="nav-group-label">Data</div>
-        <a class="nav-link" href="#">Contacts</a>
-        <a class="nav-link" href="#">Action Items</a>
+        <a class="nav-link" onclick="showTab('contacts')">Contacts</a>
+        <a class="nav-link" onclick="showTab('actions')">Action Items</a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-label">System</div>
+        <a class="nav-link" onclick="showTab('setup')">Setup Checklist</a>
+        <a class="nav-link" onclick="showTab('guardrails')">Guardrails</a>
       </div>
 
       <div class="sidebar-footer">
         <div class="avatar">AM</div>
-        <div class="user-meta">
-          <strong>Aalia Mohammad</strong>
-          <span>CEO</span>
-        </div>
+        <div class="user-meta"><strong>Aalia Mohammad</strong><span>CEO</span></div>
       </div>
-    </aside>
+    </nav>
 
-    <main class="main">
-      <header class="top-header">
+    <div class="main">
+      <div class="top-header">
         <div class="top-left">
           <h1>Command Center</h1>
           <p>BTL Aesthetics Marketing Operations</p>
         </div>
         <div class="status-pill"><span class="status-dot"></span>System Active</div>
-      </header>
+      </div>
 
-      <section class="content">
-        <div class="alert">
-          <div>Reminder: upload Salesforce exclusions and brand assets to fully activate outreach automation.</div>
-        </div>
+      <div class="tabs-bar">
+        <div class="tab active" onclick="showTab('overview')">Overview</div>
+        <div class="tab" onclick="showTab('team')">Team</div>
+        <div class="tab" onclick="showTab('sequences')">Sequences</div>
+        <div class="tab" onclick="showTab('events')">Events</div>
+        <div class="tab" onclick="showTab('pipeline')">Pipeline</div>
+        <div class="tab" onclick="showTab('contacts')">Contacts</div>
+        <div class="tab" onclick="showTab('actions')">Actions</div>
+        <div class="tab" onclick="showTab('setup')">Setup</div>
+        <div class="tab" onclick="showTab('guardrails')">Guardrails</div>
+      </div>
+
+      <div class="content tab-panel visible" id="tab-overview">
+        <div class="alert"><strong>Reminder:</strong> Share Salesforce exclusion list and brand assets to fully activate outreach.</div>
 
         <div class="stats">
           <div class="stat"><div class="stat-label">Total Contacts</div><div class="stat-num">23,140</div><div class="stat-sub">HubSpot database</div></div>
@@ -301,11 +342,11 @@
         <div class="grid-2">
           <div class="card">
             <div class="card-head"><h3>Campaign Pipeline</h3><span class="pill p-green">Live</span></div>
-            <div class="row"><div>Tulsa Event - 4 Active Sequences</div><div class="meta">524 enrolled</div></div>
-            <div class="row"><div>Dallas Event - Sequence Planning</div><div class="meta">June 5-7</div></div>
-            <div class="row"><div>Salesforce Exclusion List Setup</div><div class="meta">Awaiting data</div></div>
-            <div class="row"><div>Midland/Odessa Expansion</div><div class="meta">Queued</div></div>
-            <div class="links">
+            <div class="row"><span>Tulsa Event - 4 Active Sequences</span><span class="meta">524 enrolled</span></div>
+            <div class="row"><span>Dallas Event - Sequence Planning</span><span class="meta">June 5-7</span></div>
+            <div class="row"><span>Salesforce Exclusion List Setup</span><span class="meta">Awaiting data</span></div>
+            <div class="row"><span>Midland/Odessa Expansion</span><span class="meta">Queued</span></div>
+            <div class="hs-links">
               <a class="hs-link" target="_blank" rel="noreferrer" href="https://app.hubspot.com/sequences/245216884">All Sequences</a>
               <a class="hs-link" target="_blank" rel="noreferrer" href="https://app.hubspot.com/workflows/245216884">Workflows</a>
               <a class="hs-link" target="_blank" rel="noreferrer" href="https://app.hubspot.com/contacts/245216884/objects/0-1/views/all/list">All Contacts</a>
@@ -313,18 +354,150 @@
           </div>
 
           <div class="card">
-            <div class="card-head"><h3>Action Items</h3><span class="pill p-amber">6 Open</span></div>
-            <div class="row"><div>Share Salesforce exclusion list</div><span class="pill p-amber">You</span></div>
-            <div class="row"><div>Share brand assets</div><span class="pill p-amber">You</span></div>
-            <div class="row"><div>Approve Dallas sequence copy</div><span class="pill p-blue">Review</span></div>
-            <div class="row"><div>Tag enrolled contacts for Tulsa</div><span class="pill p-blue">Sales Ops</span></div>
-            <div class="links">
-              <a class="hs-link" target="_blank" rel="noreferrer" href="https://app.hubspot.com/contacts/245216884">HubSpot Portal</a>
-            </div>
+            <div class="card-head"><h3>Action Items</h3><span class="pill p-purple">6 Open</span></div>
+            <div class="row"><span>Share Salesforce exclusion list</span><span class="pill p-amber">You</span></div>
+            <div class="row"><span>Share brand assets</span><span class="pill p-amber">You</span></div>
+            <div class="row"><span>Approve Dallas event sequence copy</span><span class="pill p-blue">Review</span></div>
+            <div class="row"><span>Tag enrolled contacts for Tulsa</span><span class="pill p-blue">Sales Ops</span></div>
           </div>
         </div>
-      </section>
-    </main>
+      </div>
+
+      <div class="content tab-panel" id="tab-team">
+        <div class="card">
+          <div class="card-head"><h3>Team Structure</h3><span class="pill p-purple">6 Agents</span></div>
+          <div class="row"><span>CEO</span><span class="meta">Aalia Mohammad</span></div>
+          <div class="row"><span>VP Sales & Marketing</span><span class="meta">Sales Dev Agent</span></div>
+          <div class="row"><span>Sales Operations</span><span class="meta">Outreach Specialist</span></div>
+          <div class="row"><span>Marketing</span><span class="meta">Event Campaign Manager</span></div>
+          <div class="row"><span>Intelligence</span><span class="meta">Research Analyst</span></div>
+          <div class="row"><span>RevOps</span><span class="meta">RevOps Manager</span></div>
+        </div>
+      </div>
+
+      <div class="content tab-panel" id="tab-sequences">
+        <div class="stats">
+          <div class="stat"><div class="stat-label">Currently Enrolled</div><div class="stat-num">524</div><div class="stat-sub">Across all sequences</div></div>
+          <div class="stat"><div class="stat-label">Hot in Sequences</div><div class="stat-num" style="color:#0cad55">7</div><div class="stat-sub">Priority active</div></div>
+          <div class="stat"><div class="stat-label">Warm in Sequences</div><div class="stat-num" style="color:#d97706">3</div><div class="stat-sub">Nurture active</div></div>
+          <div class="stat"><div class="stat-label">Cold in Sequences</div><div class="stat-num" style="color:#0570de">514</div><div class="stat-sub">Mostly optometry</div></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Active Sequences</h3><span class="pill p-green">4 Live</span></div>
+          <div class="row"><span>Optometry - N. Texas</span><a class="hs-link" target="_blank" rel="noreferrer" href="https://app.hubspot.com/sequences/245216884/sequence/600905410/summary">Open</a></div>
+          <div class="row"><span>Weight Loss - N. Texas</span><a class="hs-link" target="_blank" rel="noreferrer" href="https://app.hubspot.com/sequences/245216884/sequence/601204440/summary">Open</a></div>
+          <div class="row"><span>Aesthetics - N. Texas</span><a class="hs-link" target="_blank" rel="noreferrer" href="https://app.hubspot.com/sequences/245216884/sequence/600076022/summary">Open</a></div>
+          <div class="row"><span>Dental/Med Spa - Oklahoma</span><a class="hs-link" target="_blank" rel="noreferrer" href="https://app.hubspot.com/sequences/245216884/sequence/601589479/summary">Open</a></div>
+        </div>
+      </div>
+
+      <div class="content tab-panel" id="tab-events">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-head"><h3>The Modern Medicine Symposium</h3><span class="pill p-green">Live</span></div>
+            <div class="row"><span>April 24-26, 2026 - Tulsa</span><span class="meta">Hyatt Regency</span></div>
+            <div class="row"><span>Active sequences</span><span class="meta">4</span></div>
+            <div class="row"><span>Contacts in sequences</span><span class="meta">524</span></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>Dallas Event</h3><span class="pill p-amber">Planning</span></div>
+            <div class="row"><span>June 5-7, 2026 - Dallas</span><span class="meta">Hotel ZaZa</span></div>
+            <div class="row"><span>Status</span><span class="meta">Awaiting approval and assets</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content tab-panel" id="tab-pipeline">
+        <div class="card">
+          <div class="card-head"><h3>Campaign Pipeline</h3></div>
+          <div class="row"><span>Tulsa Event - 4 Active Sequences</span><span class="pill p-green">Live</span></div>
+          <div class="row"><span>Dallas Event - Sequence Planning</span><span class="pill p-amber">Planning</span></div>
+          <div class="row"><span>Salesforce Exclusion Setup</span><span class="pill p-purple">Waiting</span></div>
+          <div class="row"><span>Midland/Odessa Expansion</span><span class="pill p-blue">Queued</span></div>
+          <div class="row"><span>SMS Automation</span><span class="pill p-amber">Blocked</span></div>
+        </div>
+      </div>
+
+      <div class="content tab-panel" id="tab-contacts">
+        <div class="stats">
+          <div class="stat"><div class="stat-label">Total</div><div class="stat-num">23,140</div><div class="stat-sub">HubSpot db</div></div>
+          <div class="stat"><div class="stat-label">Hot</div><div class="stat-num" style="color:#0cad55">1,809</div><div class="stat-sub">7.8%</div></div>
+          <div class="stat"><div class="stat-label">Warm</div><div class="stat-num" style="color:#d97706">7,096</div><div class="stat-sub">30.7%</div></div>
+          <div class="stat"><div class="stat-label">Cold</div><div class="stat-num" style="color:#0570de">7,645</div><div class="stat-sub">33.0%</div></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Hot Leads - Not Yet in Sequence</h3><span class="pill p-green">Ready</span></div>
+          <div class="row"><span>Mauricio Giraldo - Medilaser (Frisco)</span><span class="pill p-green">Not enrolled</span></div>
+          <div class="row"><span>Them Tammy Vu - Best Optical (Plano)</span><span class="pill p-green">Not enrolled</span></div>
+          <div class="row"><span>Geoff Scott - Brenda Coley, AUD</span><span class="pill p-green">Not enrolled</span></div>
+        </div>
+      </div>
+
+      <div class="content tab-panel" id="tab-actions">
+        <div class="card">
+          <div class="card-head"><h3>Action Items</h3><span class="pill p-purple">6 Open</span></div>
+          <div class="row"><span>Share Salesforce exclusion list (CSV/XLSX)</span><span class="pill p-amber">You</span></div>
+          <div class="row"><span>Share brand assets (templates/flyers/guidelines)</span><span class="pill p-amber">You</span></div>
+          <div class="row"><span>Review dental sequence bounce rate</span><span class="pill p-blue">Intelligence</span></div>
+          <div class="row"><span>Approve Dallas sequence copy</span><span class="pill p-amber">You</span></div>
+        </div>
+      </div>
+
+      <div class="content tab-panel" id="tab-setup">
+        <div class="card">
+          <div class="card-head"><h3>System Setup Progress</h3><span class="pill p-purple">6/11 Complete</span></div>
+          <div class="row"><span>Project folder structure + CLAUDE.md</span><span class="pill p-green">Done</span></div>
+          <div class="row"><span>Skills and agents configured</span><span class="pill p-green">Done</span></div>
+          <div class="row"><span>Operational rules documented</span><span class="pill p-green">Done</span></div>
+          <div class="row"><span>Salesforce exclusion list uploaded</span><span class="pill p-amber">Urgent</span></div>
+          <div class="row"><span>Brand assets loaded</span><span class="pill p-amber">Urgent</span></div>
+        </div>
+      </div>
+
+      <div class="content tab-panel" id="tab-guardrails">
+        <div class="card">
+          <div class="card-head"><h3>Active Guardrails</h3><span class="pill p-green">Enforced</span></div>
+          <div class="row"><span>Confidentiality: no event intel without approval</span></div>
+          <div class="row"><span>Territory: only OK + assigned TX regions</span></div>
+          <div class="row"><span>Exclusions: cross-check Salesforce before outreach</span></div>
+          <div class="row"><span>One active sequence per contact</span></div>
+          <div class="row"><span>Calendar invites are manual only</span></div>
+          <div class="row"><span>All outreach requires your sign-off</span></div>
+        </div>
+      </div>
+
+    </div>
   </div>
+
+  <script>
+    function showTab(name) {
+      document.querySelectorAll('.tab-panel').forEach(function(panel) {
+        panel.classList.remove('visible');
+      });
+      document.querySelectorAll('.tab').forEach(function(tab) {
+        tab.classList.remove('active');
+      });
+      document.querySelectorAll('.nav-link').forEach(function(link) {
+        link.classList.remove('active');
+      });
+
+      var panel = document.getElementById('tab-' + name);
+      if (panel) {
+        panel.classList.add('visible');
+      }
+
+      document.querySelectorAll('.tab').forEach(function(tab) {
+        if (tab.textContent.trim().toLowerCase() === name) {
+          tab.classList.add('active');
+        }
+      });
+
+      document.querySelectorAll('.nav-link').forEach(function(link) {
+        if (link.getAttribute('onclick') === "showTab('" + name + "')") {
+          link.classList.add('active');
+        }
+      });
+    }
+  </script>
 </body>
 </html>
