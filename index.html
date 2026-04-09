@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BTL Command Center</title>
+<style>
+  :root {
+    --bg: #f7f8fa;
+    --bg-white: #ffffff;
+    --border: #e3e8ee;
+    --border-light: #f0f2f5;
+    --text-primary: #1a1f36;
+    --text-secondary: #4f566b;
+    --text-muted: #8792a2;
+    --accent: #635bff;
+    --accent-hover: #5851ea;
+    --green: #0cad55;
+    --green-bg: #eefbf3;
+    --green-text: #0d7a3e;
+    --amber: #d97706;
+    --amber-bg: #fffbeb;
+    --amber-text: #92400e;
+    --red: #dc2626;
+    --red-bg: #fef2f2;
+    --red-text: #991b1b;
+    --blue: #0570de;
+    --blue-bg: #eff6ff;
+    --purple-bg: #f5f3ff;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --radius: 8px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; background: var(--bg); color: var(--text-primary); -webkit-font-smoothing: antialiased; font-size: 14px; line-height: 1.5; }
+
+  /* Layout */
+  .layout { display: flex; min-height: 100vh; }
+
+  /* Sidebar */
+  .sidebar { width: 220px; background: var(--bg-white); border-right: 1px solid var(--border); position: fixed; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; }
+  .sidebar-brand { padding: 18px 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-light); }
+  .brand-icon { width: 26px; height: 26px; background: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: #fff; }
+  .brand-name { font-size: 14px; font-weight: 600; }
+
+  .nav-group { padding: 12px 8px 4px; }
+  .nav-group-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); padding: 0 8px 6px; }
+  .nav-link { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 6px; font-size: 13px; color: var(--text-secondary); cursor: pointer; transition: all 0.1s; text-decoration: none; }
+  .nav-link:hover { background: var(--bg); color: var(--text-primary); }
+  .nav-link.active { background: var(--purple-bg); color: var(--accent); font-weight: 500; }
+  .nav-link svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+  .nav-count { margin-left: auto; background: var(--bg); font-size: 11px; font-weight: 500; padding: 1px 7px; border-radius: 10px; color: var(--text-muted); }
+
+  .sidebar-footer { margin-top: auto; padding: 14px 16px; border-top: 1px solid var(--border-light); display: flex; align-items: center; gap: 10px; }
+  .avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #fff; flex-shrink: 0; }
+  .user-meta { font-size: 12px; }
+  .user-meta strong { font-weight: 600; display: block; color: var(--text-primary); }
+  .user-meta span { color: var(--text-muted); font-size: 11px; }
+
+  /* Main */
+  .main { margin-left: 220px; flex: 1; min-width: 0; }
+
+  /* Top header */
+  .top-header { background: var(--bg-white); border-bottom: 1px solid var(--border); padding: 16px 28px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
+  .top-left h1 { font-size: 18px; font-weight: 600; }
+  .top-left p { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+  .top-right { display: flex; align-items: center; gap: 12px; }
+  .status-pill { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--green-text); background: var(--green-bg); padding: 5px 12px; border-radius: 16px; font-weight: 500; }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.3} }
+
+  /* Tabs */
+  .tabs-bar { background: var(--bg-white); border-bottom: 1px solid var(--border); padding: 0 28px; display: flex; gap: 0; position: sticky; top: 57px; z-index: 9; }
+  .tab { padding: 10px 16px; font-size: 13px; font-weight: 500; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; }
+  .tab:hover { color: var(--text-secondary); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* Content area */
+  .content { padding: 24px 28px; max-width: 1160px; }
+
+  /* Tab content show/hide */
+  .tab-panel { display: none; }
+  .tab-panel.visible { display: block; }
+
+  /* Alert */
+  .alert { display: flex; align-items: flex-start; gap: 10px; background: var(--amber-bg); border: 1px solid #fde68a; border-radius: var(--radius); padding: 12px 16px; margin-bottom: 20px; font-size: 13px; color: var(--amber-text); line-height: 1.6; }
+  .alert strong { font-weight: 600; }
+
+  /* Stat cards */
+  .stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .stat { background: var(--bg-white); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow-sm); }
+  .stat-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 6px; }
+  .stat-num { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
+  .stat-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+  .c-green { color: var(--green); }
+  .c-amber { color: var(--amber); }
+  .c-red { color: var(--red); }
+  .c-blue { color: var(--blue); }
+  .c-purple { color: var(--accent); }
+  .c-muted { color: var(--text-muted); }
+
+  /* Grid layouts */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .grid-3-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 20px; }
+
+  /* Card */
+  .card { background: var(--bg-white); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; }
+  .card-head { padding: 14px 16px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; }
+  .card-head h3 { font-size: 13px; font-weight: 600; }
+  .badge { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.3px; }
+  .b-green { background: var(--green-bg); color: var(--green-text); }
+  .b-amber { background: var(--amber-bg); color: var(--amber-text); }
+  .b-purple { background: var(--purple-bg); color: var(--accent); }
+  .b-red { background: var(--red-bg); color: var(--red-text); }
+  .b-gray { background: var(--bg); color: var(--text-muted); }
+
+  /* Table */
+  .tbl-head { display: grid; padding: 8px 16px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); background: var(--bg); border-bottom: 1px solid var(--border-light); }
+  .tbl-row { display: grid; padding: 10px 16px; border-bottom: 1px solid var(--border-light); font-size: 13px; align-items: center; transition: background 0.1s; }
+  .tbl-row:last-child { border-bottom: none; }
+  .tbl-row:hover { background: #fafbfd; }
+  .seq-grid { grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr; }
+  .tbl-cell { text-align: center; }
+  .tbl-cell:first-child { text-align: left; font-weight: 500; }
+  .m-good { color: var(--green); font-weight: 600; }
+  .m-ok { color: var(--amber); font-weight: 600; }
+  .m-bad { color: var(--red); font-weight: 600; }
+
+  /* Pipeline rows */
+  .pipe-row { display: flex; align-items: center; padding: 11px 16px; border-bottom: 1px solid var(--border-light); gap: 10px; }
+  .pipe-row:last-child { border-bottom: none; }
+  .pipe-row:hover { background: #fafbfd; }
+  .pipe-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .pipe-name { font-size: 13px; font-weight: 500; flex: 1; }
+  .pipe-meta { font-size: 11px; color: var(--text-muted); }
+
+  /* Bar chart */
+  .bar-group { padding: 14px 16px; }
+  .bar-item { margin-bottom: 12px; }
+  .bar-item:last-child { margin-bottom: 0; }
+  .bar-top { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
+  .bar-top span:first-child { color: var(--text-secondary); }
+  .bar-top span:last-child { font-weight: 600; color: var(--text-primary); }
+  .bar-track { height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 3px; }
+
+  /* Actions list */
+  .action-row { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid var(--border-light); }
+  .action-row:last-child { border-bottom: none; }
+  .action-row:hover { background: #fafbfd; }
+  .action-bar { width: 3px; height: 24px; border-radius: 2px; flex-shrink: 0; }
+  .action-text { font-size: 13px; color: var(--text-secondary); flex: 1; }
+  .action-owner { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; white-space: nowrap; }
+  .o-you { background: var(--purple-bg); color: var(--accent); }
+  .o-sales { background: var(--green-bg); color: var(--green-text); }
+  .o-mkt { background: #fdf4ff; color: #9333ea; }
+  .o-intel { background: var(--blue-bg); color: var(--blue); }
+
+  /* Checklist */
+  .chk { display: flex; align-items: center; gap: 9px; padding: 8px 16px; border-bottom: 1px solid var(--border-light); font-size: 13px; }
+  .chk:last-child { border-bottom: none; }
+  .chk-box { width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; }
+  .chk-box.done { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .chk-done { color: var(--text-muted); text-decoration: line-through; }
+  .chk-tag { margin-left: auto; font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 4px; }
+
+  /* Org chart */
+  .org { display: flex; flex-direction: column; align-items: center; gap: 0; padding: 20px 16px; }
+  .org-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .org-vline { width: 1px; height: 18px; background: var(--border); }
+  .org-hline { display: flex; align-items: center; justify-content: center; height: 18px; position: relative; width: 60%; }
+  .org-hline::before { content:''; position: absolute; top: 0; left: 15%; right: 15%; height: 1px; background: var(--border); }
+  .org-hline::after { content:''; position: absolute; top: 0; left: 50%; width: 1px; height: 18px; background: var(--border); }
+  .org-node { border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; min-width: 140px; text-align: center; background: var(--bg-white); transition: border-color 0.15s; }
+  .org-node:hover { border-color: var(--accent); }
+  .org-node.n-ceo { border-color: var(--accent); background: linear-gradient(180deg, #f9f8ff 0%, #fff 100%); }
+  .org-node.n-vp { border-color: var(--amber); background: linear-gradient(180deg, #fffdf5 0%, #fff 100%); }
+  .org-node.n-dir { border-left: 3px solid; }
+  .org-node.n-sales { border-left-color: var(--green); }
+  .org-node.n-mkt { border-left-color: var(--accent); }
+  .org-node.n-intel { border-left-color: var(--blue); }
+  .org-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+  .l-green { color: var(--green); }
+  .l-purple { color: var(--accent); }
+  .l-blue { color: var(--blue); }
+  .l-amber { color: var(--amber); }
+  .org-name { font-size: 12px; font-weight: 600; color: var(--text-primary); }
+  .org-role { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+
+  /* Workflow */
+  .wf { padding: 16px; }
+  .wf-step { display: flex; gap: 12px; padding: 8px 0; position: relative; }
+  .wf-step:not(:last-child)::before { content:''; position: absolute; left: 11px; top: 32px; bottom: -4px; width: 1px; background: var(--border); }
+  .wf-num { width: 22px; height: 22px; border-radius: 50%; background: var(--bg); border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; color: var(--text-muted); flex-shrink: 0; z-index: 1; }
+  .wf-text { font-size: 13px; color: var(--text-secondary); padding-top: 1px; line-height: 1.6; }
+  .wf-text strong { color: var(--text-primary); font-weight: 500; }
+  .wf-agent { color: var(--accent); font-weight: 500; }
+
+  /* Guard rules */
+  .guard { display: flex; align-items: flex-start; gap: 8px; padding: 7px 16px; font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+  .guard-ico { flex-shrink: 0; width: 18px; text-align: center; }
+
+  /* HubSpot links */
+  .hs-link { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 500; color: #ff7a59; text-decoration: none; padding: 3px 10px; border: 1px solid #ffd4c8; border-radius: 5px; background: #fff5f2; transition: all 0.15s; white-space: nowrap; }
+  .hs-link:hover { background: #ffe8e0; border-color: #ff7a59; color: #e0563c; }
+  .hs-link svg { width: 12px; height: 12px; fill: currentColor; flex-shrink: 0; }
+  .hs-links-bar { display: flex; gap: 8px; flex-wrap: wrap; padding: 10px 16px; border-top: 1px solid var(--border-light); background: #fafbfd; }
+  .hs-links-bar-top { display: flex; gap: 8px; flex-wrap: wrap; padding: 0; }
+
+  /* Events */
+  .event-card { padding: 16px; }
+  .event-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .event-detail { font-size: 13px; color: var(--text-secondary); line-height: 1.8; }
+  .event-detail strong { color: var(--text-primary); }
+
+  /* Responsive */
+  @media (max-width: 960px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .grid-2, .grid-3-1 { grid-template-columns: 1fr; }
+    .seq-grid { grid-template-columns: 2fr 1fr 1fr 1fr; }
+    .seq-grid .tbl-cell:nth-child(5), .seq-grid .tbl-cell:nth-child(6) { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- Sidebar -->
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">B</div>
+    <div class="brand-name">BTL Command Center</div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Overview</div>
+    <a class="nav-link active" onclick="showTab('overview')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </a>
+    <a class="nav-link" onclick="showTab('team')">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Team
+    </a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Campaigns</div>
+    <a class="nav-link" onclick="showTab('sequences')">
+      <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      Sequences
+      <span class="nav-count">6</span>
+    </a>
+    <a class="nav-link" onclick="showTab('events')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Events
+      <span class="nav-count">2</span>
+    </a>
+    <a class="nav-link" onclick="showTab('pipeline')">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Pipeline
+    </a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Data</div>
+    <a class="nav-link" onclick="showTab('contacts')">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Contacts
+    </a>
+    <a class="nav-link" onclick="showTab('actions')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Action Items
+      <span class="nav-count">6</span>
+    </a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">System</div>
+    <a class="nav-link" onclick="showTab('setup')">
+      <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Setup Checklist
+    </a>
+    <a class="nav-link" onclick="showTab('guardrails')">
+      <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Guardrails
+    </a>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="avatar">AM</div>
+    <div class="user-meta">
+      <strong>Aalia Mohammad</strong>
+      <span>CEO</span>
+    </div>
+  </div>
+</nav>
+
+<!-- Main -->
+<div class="main">
+  <div class="top-header">
+    <div class="top-left">
+      <h1>Command Center</h1>
+      <p>BTL Aesthetics Marketing Operations</p>
+    </div>
+    <div class="top-right">
+      <div class="status-pill"><div class="status-dot"></div> System Active</div>
+    </div>
+  </div>
+
+  <div class="tabs-bar">
+    <div class="tab active" onclick="showTab('overview')">Overview</div>
+    <div class="tab" onclick="showTab('team')">Team</div>
+    <div class="tab" onclick="showTab('sequences')">Sequences</div>
+    <div class="tab" onclick="showTab('events')">Events</div>
+    <div class="tab" onclick="showTab('pipeline')">Pipeline</div>
+    <div class="tab" onclick="showTab('contacts')">Contacts</div>
+    <div class="tab" onclick="showTab('actions')">Actions</div>
+    <div class="tab" onclick="showTab('setup')">Setup</div>
+    <div class="tab" onclick="showTab('guardrails')">Guardrails</div>
+  </div>
+
+  <!-- ========== OVERVIEW TAB ========== -->
+  <div class="content tab-panel visible" id="tab-overview">
+    <div class="alert">
+      <span>&#x1F4CB;</span>
+      <div><strong>Reminder:</strong> Share your Salesforce exclusion list (existing BTL accounts) and brand assets (email templates, event flyers, brand guidelines) to fully activate the outreach system.</div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div class="hs-links-bar-top">
+        <a class="hs-link" href="https://app.hubspot.com/contacts/245216884" target="_blank"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg> HubSpot Portal</a>
+        <a class="hs-link" href="https://app.hubspot.com/contacts/245216884/objects/0-1/views/all/list" target="_blank"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg> All Contacts</a>
+        <a class="hs-link" href="https://app.hubspot.com/sequences/245216884" target="_blank"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg> All Sequences</a>
+        <a class="hs-link" href="https://app.hubspot.com/workflows/245216884" target="_blank"><svg viewBox="0 0 24 24"><path d="M14 4l2.29 2.29-2.88 2.88 1.42 1.42 2.88-2.88L20 10V4zm-4 0H4v6l2.29-2.29 4.71 4.7V20h2v-8.41l-5.29-5.3z"/></svg> Workflows</a>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="stat-label">Total Contacts</div><div class="stat-num">23,140</div><div class="stat-sub">HubSpot database</div></div>
+      <div class="stat"><div class="stat-label">Hot Leads</div><div class="stat-num c-green">1,809</div><div class="stat-sub">7.8% — priority outreach</div></div>
+      <div class="stat"><div class="stat-label">In Sequences</div><div class="stat-num c-purple">524</div><div class="stat-sub">Currently enrolled</div></div>
+      <div class="stat"><div class="stat-label">Warm Pipeline</div><div class="stat-num c-amber">7,096</div><div class="stat-sub">30.7% — ready to nurture</div></div>
+      <div class="stat"><div class="stat-label">Territory Tagged</div><div class="stat-num c-blue">16,181</div><div class="stat-sub">15,149 N TX &middot; 1,032 OK</div></div>
+    </div>
+
+    <div class="grid-2">
+      <!-- Hot Leads Table -->
+      <div class="card">
+        <div class="card-head"><h3>Hot Leads — Recent</h3><span class="badge b-green">1,809 Total</span></div>
+        <div class="tbl-head" style="grid-template-columns:2fr 2fr 1fr 1fr; display:grid;"><span class="tbl-cell">Name</span><span class="tbl-cell">Company</span><span class="tbl-cell">City</span><span class="tbl-cell">Specialty</span></div>
+        <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/440964689594" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Mauricio Giraldo</a></span><span class="tbl-cell">Medilaser</span><span class="tbl-cell">Frisco, TX</span><span class="tbl-cell" style="color:var(--text-muted)">Plastic Surg</span></div>
+        <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462195207923" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Them Tammy Vu</a></span><span class="tbl-cell">Best Optical</span><span class="tbl-cell">Plano, TX</span><span class="tbl-cell" style="color:var(--text-muted)">Plastic Surg</span></div>
+        <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462195208903" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Geoff Scott</a></span><span class="tbl-cell">Brenda Coley, AUD</span><span class="tbl-cell">N. Richland Hills</span><span class="tbl-cell" style="color:var(--text-muted)">Med Spa</span></div>
+        <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462135843550" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Rhiannon Newsom</a></span><span class="tbl-cell">Rhiannon Newsom, NP-C</span><span class="tbl-cell">Lubbock, TX</span><span class="tbl-cell" style="color:var(--text-muted)">Med Spa</span></div>
+        <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462259898084" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Andr&eacute; Muller</a></span><span class="tbl-cell">CloZet Therapy &amp; Beauty</span><span class="tbl-cell">Red Oak, TX</span><span class="tbl-cell" style="color:var(--text-muted)">Med Spa</span></div>
+        <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462270142196" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Arnold J. Morris</a></span><span class="tbl-cell">The Preserve Med Spa</span><span class="tbl-cell">Fort Worth, TX</span><span class="tbl-cell" style="color:var(--text-muted)">Med Spa</span></div>
+        <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462230935286" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Doohi Lee</a></span><span class="tbl-cell">Mary Caire MD</span><span class="tbl-cell">Plano, TX</span><span class="tbl-cell" style="color:var(--text-muted)">Plastic Surg</span></div>
+        <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462135843527" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Nick Nicholson</a></span><span class="tbl-cell">Abdominal Surgery Specialists</span><span class="tbl-cell">Frisco, TX</span><span class="tbl-cell" style="color:var(--text-muted)">Plastic Surg</span></div>
+        <div style="padding:10px 16px;font-size:12px;color:var(--text-muted);border-top:1px solid var(--border-light)">Showing 8 of 1,809 hot leads &middot; Names link to HubSpot &middot; <em>Ask me to pull more or filter by city/specialty</em></div>
+      </div>
+
+      <!-- Priority + Territory -->
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="card">
+          <div class="card-head"><h3>Priority Breakdown</h3></div>
+          <div class="bar-group">
+            <div class="bar-item"><div class="bar-top"><span>Hot</span><span>1,809</span></div><div class="bar-track"><div class="bar-fill" style="width:7.8%;background:var(--green)"></div></div></div>
+            <div class="bar-item"><div class="bar-top"><span>Warm</span><span>7,096</span></div><div class="bar-track"><div class="bar-fill" style="width:30.7%;background:var(--amber)"></div></div></div>
+            <div class="bar-item"><div class="bar-top"><span>Cold</span><span>7,645</span></div><div class="bar-track"><div class="bar-fill" style="width:33%;background:var(--blue)"></div></div></div>
+            <div class="bar-item"><div class="bar-top"><span>Unset</span><span>~6,590</span></div><div class="bar-track"><div class="bar-fill" style="width:28.5%;background:#d1d5db"></div></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Territory Distribution</h3></div>
+          <div class="bar-group">
+            <div class="bar-item"><div class="bar-top"><span>N. Texas (DFW+)</span><span>15,149</span></div><div class="bar-track"><div class="bar-fill" style="width:93.6%;background:var(--accent)"></div></div></div>
+            <div class="bar-item"><div class="bar-top"><span>Oklahoma</span><span>1,032</span></div><div class="bar-track"><div class="bar-fill" style="width:6.4%;background:var(--green)"></div></div></div>
+            <div class="bar-item"><div class="bar-top"><span>In Sequences Now</span><span>524</span></div><div class="bar-track"><div class="bar-fill" style="width:3.3%;background:var(--amber)"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Currently in Sequences -->
+    <div class="card" style="margin-top:16px">
+      <div class="card-head"><h3>Currently in Sequences</h3><span class="badge b-purple">524 Enrolled</span></div>
+      <div class="tbl-head" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell">Name</span><span class="tbl-cell">Company</span><span class="tbl-cell">City</span><span class="tbl-cell">State</span><span class="tbl-cell">Priority</span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462264350454" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Andrew Hustava</a></span><span class="tbl-cell">Flower Mound Eye Care</span><span class="tbl-cell">Flower Mound</span><span class="tbl-cell">TX</span><span class="tbl-cell"><span class="badge b-gray">Cold</span></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462264350432" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Allen Quach</a></span><span class="tbl-cell">Stonebriar Vision</span><span class="tbl-cell">Frisco</span><span class="tbl-cell">TX</span><span class="tbl-cell"><span class="badge b-gray">Cold</span></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462264350453" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Gregory Nettune</a></span><span class="tbl-cell">Andrew C. Bowman, MD</span><span class="tbl-cell">Plano</span><span class="tbl-cell">TX</span><span class="tbl-cell"><span class="badge b-gray">Cold</span></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462264829668" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Stephanie Gonser</a></span><span class="tbl-cell">Weight Loss Today - Plano</span><span class="tbl-cell">Plano</span><span class="tbl-cell">TX</span><span class="tbl-cell"><span class="badge b-amber">Warm</span></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462267500268" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Michael Colotta</a></span><span class="tbl-cell">Henderson Family Medicine</span><span class="tbl-cell">Henderson</span><span class="tbl-cell">TX</span><span class="tbl-cell"><span class="badge b-amber">Warm</span></span></div>
+      <div style="padding:10px 16px;font-size:12px;color:var(--text-muted);border-top:1px solid var(--border-light)">Showing 5 of 524 enrolled &middot; Names link to HubSpot &middot; <em>Ask me to see the full list or filter by sequence</em></div>
+    </div>
+  </div>
+
+  <!-- ========== TEAM TAB ========== -->
+  <div class="content tab-panel" id="tab-team">
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-head"><h3>Organizational Structure</h3><span class="badge b-purple">6 Agents &middot; 15 Skills</span></div>
+      <div class="org">
+        <div class="org-row">
+          <div class="org-node n-ceo"><div class="org-label l-purple">CEO</div><div class="org-name">Aalia Mohammad</div><div class="org-role">Sets direction, approves all outreach</div></div>
+        </div>
+        <div class="org-vline"></div>
+        <div class="org-row">
+          <div class="org-node n-vp"><div class="org-label l-amber">VP of Sales & Marketing</div><div class="org-name">Sales Dev Agent</div><div class="org-role">Always-on coordinator, enforces rules</div></div>
+        </div>
+        <div class="org-hline" style="width:80%"><div style="position:absolute;top:0;left:10%;right:10%;height:1px;background:var(--border)"></div></div>
+        <div class="org-row">
+          <div class="org-node n-dir n-sales"><div class="org-label l-green">Sales Operations</div><div class="org-name">Outreach Specialist</div><div class="org-role">Director &middot; 3 skills</div></div>
+          <div class="org-node n-dir n-mkt"><div class="org-label l-purple">Marketing</div><div class="org-name">Event Campaign Mgr</div><div class="org-role">Director &middot; manages Content Creator</div></div>
+          <div class="org-node n-dir n-intel"><div class="org-label l-blue">Intelligence</div><div class="org-name">Research Analyst</div><div class="org-role">Director &middot; 3 skills</div></div>
+          <div class="org-node n-dir" style="border-left-color:var(--amber)"><div class="org-label" style="color:var(--amber)">RevOps</div><div class="org-name">RevOps Manager</div><div class="org-role">Director &middot; 3 skills</div></div>
+        </div>
+        <div class="org-vline"></div>
+        <div class="org-row">
+          <div class="org-node" style="opacity:0;pointer-events:none;min-width:140px"></div>
+          <div class="org-node" style="border-left:3px solid var(--accent)"><div class="org-label l-purple">Marketing Team</div><div class="org-name">Content Creator</div><div class="org-role">Reports to Event Campaign Mgr</div></div>
+          <div class="org-node" style="opacity:0;pointer-events:none;min-width:140px"></div>
+          <div class="org-node" style="opacity:0;pointer-events:none;min-width:140px"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-head"><h3>How Tasks Flow</h3></div>
+        <div class="wf">
+          <div class="wf-step"><div class="wf-num">1</div><div class="wf-text"><strong>You give a command</strong> or the VP surfaces an opportunity proactively</div></div>
+          <div class="wf-step"><div class="wf-num">2</div><div class="wf-text"><span class="wf-agent">VP</span> matches to a playbook, assigns to department(s)</div></div>
+          <div class="wf-step"><div class="wf-num">3</div><div class="wf-text">Departments execute in parallel: <span class="wf-agent">Intel</span> pulls data, <span class="wf-agent">Sales Ops</span> drafts copy, <span class="wf-agent">Marketing</span> creates assets</div></div>
+          <div class="wf-step"><div class="wf-num">4</div><div class="wf-text"><span class="wf-agent">VP</span> assembles deliverables: contact list + sequence + enrollment plan</div></div>
+          <div class="wf-step"><div class="wf-num">5</div><div class="wf-text"><strong>You review and approve</strong> — confidentiality check, contact list sign-off</div></div>
+          <div class="wf-step"><div class="wf-num">6</div><div class="wf-text">Approved &rarr; <span class="wf-agent">VP</span> coordinates execution across HubSpot</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Department Skills</h3></div>
+        <div style="padding:14px 16px; font-size:13px; color:var(--text-secondary); line-height:2.2;">
+          <div style="font-weight:600; color:var(--green); font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">Sales Operations</div>
+          Email Sequence Writer, Follow-Up Drafter, Sales Outreach Composer
+          <div style="font-weight:600; color:var(--accent); font-size:11px; text-transform:uppercase; letter-spacing:0.5px; margin-top:10px;">Marketing</div>
+          Event Invite Creator, Event Reminder Sequence, Post-Event Follow-Up, Blog Writer, Social Post Creator, Landing Page Builder
+          <div style="font-weight:600; color:var(--blue); font-size:11px; text-transform:uppercase; letter-spacing:0.5px; margin-top:10px;">Intelligence</div>
+          Prospect Research, Contact Enrichment, Campaign Report
+          <div style="font-weight:600; color:var(--amber); font-size:11px; text-transform:uppercase; letter-spacing:0.5px; margin-top:10px;">RevOps</div>
+          HubSpot Data Cleanup, Sequence Audit, Contact Import Prep
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SEQUENCES TAB ========== -->
+  <div class="content tab-panel" id="tab-sequences">
+    <div class="stats">
+      <div class="stat"><div class="stat-label">Currently Enrolled</div><div class="stat-num c-purple">524</div><div class="stat-sub">Across all sequences</div></div>
+      <div class="stat"><div class="stat-label">Hot in Sequences</div><div class="stat-num c-green">7</div><div class="stat-sub">Priority outreach active</div></div>
+      <div class="stat"><div class="stat-label">Warm in Sequences</div><div class="stat-num c-amber">3</div><div class="stat-sub">Nurture active</div></div>
+      <div class="stat"><div class="stat-label">Cold in Sequences</div><div class="stat-num c-blue">514</div><div class="stat-sub">Mostly optometry</div></div>
+    </div>
+
+    <!-- Active Sequences with HubSpot Links -->
+    <div class="card">
+      <div class="card-head"><h3>Active Sequences</h3><span class="badge b-green">4 Live</span></div>
+      <div class="tbl-head" style="grid-template-columns:2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell">Sequence</span><span class="tbl-cell">Specialty</span><span class="tbl-cell">Enrolled</span><span class="tbl-cell">View</span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell" style="font-weight:500">Optometry — N. Texas</span><span class="tbl-cell" style="color:var(--text-muted)">Optometry</span><span class="tbl-cell">~290</span><span class="tbl-cell"><a class="hs-link" href="https://app.hubspot.com/sequences/245216884/sequence/600905410/summary" target="_blank"><svg viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg> Open</a></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell" style="font-weight:500">Weight Loss — N. Texas</span><span class="tbl-cell" style="color:var(--text-muted)">Weight Loss</span><span class="tbl-cell">221</span><span class="tbl-cell"><a class="hs-link" href="https://app.hubspot.com/sequences/245216884/sequence/601204440/summary" target="_blank"><svg viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg> Open</a></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell" style="font-weight:500">Aesthetics — N. Texas</span><span class="tbl-cell" style="color:var(--text-muted)">Plastic Surg / Med Spa</span><span class="tbl-cell">11</span><span class="tbl-cell"><a class="hs-link" href="https://app.hubspot.com/sequences/245216884/sequence/600076022/summary" target="_blank"><svg viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg> Open</a></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell" style="font-weight:500">Dental / Med Spa — Oklahoma</span><span class="tbl-cell" style="color:var(--text-muted)">Dental / Med Spa</span><span class="tbl-cell">~20</span><span class="tbl-cell"><a class="hs-link" href="https://app.hubspot.com/sequences/245216884/sequence/601589479/summary" target="_blank"><svg viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg> Open</a></span></div>
+      <div class="hs-links-bar">
+        <a class="hs-link" href="https://app.hubspot.com/sequences/245216884" target="_blank"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg> View All Sequences in HubSpot</a>
+      </div>
+    </div>
+
+    <!-- Currently Enrolled Contacts -->
+    <div class="card" style="margin-top:16px">
+      <div class="card-head"><h3>Currently Enrolled Contacts</h3><span class="badge b-purple">524 Active</span></div>
+      <div class="tbl-head" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell">Name</span><span class="tbl-cell">Company</span><span class="tbl-cell">City</span><span class="tbl-cell">Specialty</span><span class="tbl-cell">Priority</span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462195207917" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Neil Bealka Jr.</a></span><span class="tbl-cell">Bealka Eye Associates</span><span class="tbl-cell">Hillsboro, TX</span><span class="tbl-cell" style="color:var(--text-muted)">Plastic Surg</span><span class="tbl-cell"><span class="badge b-green">Hot</span></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462259898076" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Clayton Frenzel</a></span><span class="tbl-cell">Bodevolve Bariatric &amp; Cosmetic</span><span class="tbl-cell">Richardson, TX</span><span class="tbl-cell" style="color:var(--text-muted)">Plastic Surg</span><span class="tbl-cell"><span class="badge b-green">Hot</span></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462264830687" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Angela Straface</a></span><span class="tbl-cell">Feel Ideal 360 Med Spa</span><span class="tbl-cell">Southlake, TX</span><span class="tbl-cell" style="color:var(--text-muted)">Plastic Surg</span><span class="tbl-cell"><span class="badge b-green">Hot</span></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462270143171" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Joe Stanoszek</a></span><span class="tbl-cell">Sister2Sister Wellness Spa</span><span class="tbl-cell">Mesquite, TX</span><span class="tbl-cell" style="color:var(--text-muted)">Med Spa</span><span class="tbl-cell"><span class="badge b-green">Hot</span></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462638232258" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Victoria Ball</a></span><span class="tbl-cell">Contemporary Endodontics of OK</span><span class="tbl-cell">Edmond, OK</span><span class="tbl-cell" style="color:var(--text-muted)">Dental</span><span class="tbl-cell"><span class="badge b-green">Hot</span></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462620248768" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Heng Lim</a></span><span class="tbl-cell">Life Smiles of Owasso</span><span class="tbl-cell">Owasso, OK</span><span class="tbl-cell" style="color:var(--text-muted)">Dental</span><span class="tbl-cell"><span class="badge b-green">Hot</span></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462264829668" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Stephanie Gonser</a></span><span class="tbl-cell">Weight Loss Today - Plano</span><span class="tbl-cell">Plano, TX</span><span class="tbl-cell" style="color:var(--text-muted)">Weight Loss</span><span class="tbl-cell"><span class="badge b-amber">Warm</span></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462267500268" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Michael Colotta</a></span><span class="tbl-cell">Henderson Family Medicine</span><span class="tbl-cell">Henderson, TX</span><span class="tbl-cell" style="color:var(--text-muted)">Weight Loss</span><span class="tbl-cell"><span class="badge b-amber">Warm</span></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462264350417" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Allen Quach</a></span><span class="tbl-cell">Affinity Eye Care</span><span class="tbl-cell">McKinney, TX</span><span class="tbl-cell" style="color:var(--text-muted)">Optometry</span><span class="tbl-cell"><span class="badge b-gray">Cold</span></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462228615909" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Hillary Mcandrews</a></span><span class="tbl-cell">McAndrew's Eye Clinic</span><span class="tbl-cell">Midland, TX</span><span class="tbl-cell" style="color:var(--text-muted)">Optometry</span><span class="tbl-cell"><span class="badge b-gray">Cold</span></span></div>
+      <div style="padding:10px 16px;font-size:12px;color:var(--text-muted);border-top:1px solid var(--border-light)">Showing 10 of 524 enrolled &middot; Names link to HubSpot &middot; <em>Ask me to pull full list or filter by priority/specialty</em></div>
+    </div>
+
+    <!-- Planned Sequences -->
+    <div class="card" style="margin-top:16px">
+      <div class="card-head"><h3>Planned Sequences</h3><span class="badge b-amber">Pending</span></div>
+      <div class="pipe-row"><div class="pipe-dot" style="background:var(--amber)"></div><span class="pipe-name">Dallas Event — DFW Practices</span><span class="pipe-meta">Target: June launch</span><span class="badge b-amber">Planning</span></div>
+      <div class="pipe-row"><div class="pipe-dot" style="background:var(--amber)"></div><span class="pipe-name">Dallas Event — Tulsa Decliners</span><span class="pipe-meta">Interested in Dallas</span><span class="badge b-amber">Planning</span></div>
+      <div class="pipe-row"><div class="pipe-dot" style="background:var(--blue)"></div><span class="pipe-name">Midland/Odessa — Product Intro</span><span class="pipe-meta">New territory push</span><span class="badge b-gray">Queued</span></div>
+    </div>
+
+    <!-- Enrollment Insights -->
+    <div class="card" style="margin-top:16px">
+      <div class="card-head"><h3>Enrollment Insight</h3></div>
+      <div style="padding:16px;font-size:13px;color:var(--text-secondary);line-height:1.8">
+        <strong>Pattern:</strong> The majority of enrolled contacts (514 of 524) are <strong>cold optometry</strong> contacts in N. Texas. Only 7 hot leads and 3 warm leads are currently in sequences.<br>
+        <strong>Opportunity:</strong> 1,802 hot leads and ~7,093 warm leads are <strong>not in any sequence</strong> and could be enrolled for the Tulsa or Dallas events.<br>
+        <strong>Blocker:</strong> Salesforce exclusion list needed before enrolling new contacts to avoid contacting existing BTL accounts.
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== EVENTS TAB ========== -->
+  <div class="content tab-panel" id="tab-events">
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-head"><h3>The Modern Medicine Symposium</h3><span class="badge b-green">15 Days</span></div>
+        <div class="event-card"><div class="event-detail">
+          <strong>April 24-26, 2026</strong> &middot; Hyatt Regency Tulsa Downtown<br>
+          <strong style="color:var(--green)">524</strong> contacts in active sequences &middot; <strong>4</strong> sequences live<br>
+          Target: Aesthetics, wellness, derm, OB/GYN, dental, med spa (OK)<br>
+          <span style="color:var(--text-muted)">Eye doctors receive "The Art of the Eyes" branding</span>
+        </div></div>
+        <div class="hs-links-bar">
+          <a class="hs-link" href="https://app.hubspot.com/sequences/245216884/sequence/600076022/summary" target="_blank"><svg viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg> Aesthetics Seq</a>
+          <a class="hs-link" href="https://app.hubspot.com/sequences/245216884/sequence/600905410/summary" target="_blank"><svg viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg> Optometry Seq</a>
+          <a class="hs-link" href="https://app.hubspot.com/sequences/245216884/sequence/601204440/summary" target="_blank"><svg viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg> Weight Loss Seq</a>
+          <a class="hs-link" href="https://app.hubspot.com/sequences/245216884/sequence/601589479/summary" target="_blank"><svg viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg> Dental/Spa Seq</a>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Dallas Event</h3><span class="badge b-amber">57 Days</span></div>
+        <div class="event-card"><div class="event-detail">
+          <strong>June 5-7, 2026</strong> &middot; Hotel ZaZa Dallas<br>
+          <span style="color:var(--text-muted)">Sequences not yet launched &middot; Planning phase</span><br>
+          Target: DFW metro + Tulsa decliners with Dallas interest<br>
+          <span style="color:var(--text-muted)">Awaiting: exclusion list, brand assets, sequence approval</span>
+        </div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== PIPELINE TAB ========== -->
+  <div class="content tab-panel" id="tab-pipeline">
+    <div class="card">
+      <div class="card-head"><h3>Campaign Pipeline</h3></div>
+      <div class="pipe-row"><div class="pipe-dot" style="background:var(--green)"></div><span class="pipe-name"><a href="https://app.hubspot.com/sequences/245216884" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--border)">Tulsa Event — 4 Active Sequences</a></span><span class="pipe-meta">524 enrolled</span><span class="badge b-green">Live</span></div>
+      <div class="pipe-row"><div class="pipe-dot" style="background:var(--amber)"></div><span class="pipe-name">Dallas Event — Sequence Planning</span><span class="pipe-meta">June 5-7</span><span class="badge b-amber">Planning</span></div>
+      <div class="pipe-row"><div class="pipe-dot" style="background:var(--accent)"></div><span class="pipe-name">Salesforce Exclusion List Setup</span><span class="pipe-meta">Awaiting data</span><span class="badge b-purple">Waiting</span></div>
+      <div class="pipe-row"><div class="pipe-dot" style="background:var(--blue)"></div><span class="pipe-name">Bounce Recovery + Contact Enrichment</span><span class="pipe-meta">~350 est. bounces</span><span class="badge b-gray">Queued</span></div>
+      <div class="pipe-row"><div class="pipe-dot" style="background:var(--blue)"></div><span class="pipe-name">Midland / Odessa Territory Expansion</span><span class="pipe-meta">New territory</span><span class="badge b-gray">Queued</span></div>
+      <div class="pipe-row"><div class="pipe-dot" style="background:var(--red)"></div><span class="pipe-name">SMS Automation (Twilio A2P)</span><span class="pipe-meta">EIN pending at IRS</span><span class="badge b-red">Blocked</span></div>
+      <div class="hs-links-bar">
+        <a class="hs-link" href="https://app.hubspot.com/sequences/245216884" target="_blank"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg> Sequences</a>
+        <a class="hs-link" href="https://app.hubspot.com/workflows/245216884/platform/flow/4002090693/edit" target="_blank"><svg viewBox="0 0 24 24"><path d="M14 4l2.29 2.29-2.88 2.88 1.42 1.42 2.88-2.88L20 10V4zm-4 0H4v6l2.29-2.29 4.71 4.7V20h2v-8.41l-5.29-5.3z"/></svg> Reply Workflow</a>
+        <a class="hs-link" href="https://app.hubspot.com/workflows/245216884/platform/flow/3976633080/edit" target="_blank"><svg viewBox="0 0 24 24"><path d="M14 4l2.29 2.29-2.88 2.88 1.42 1.42 2.88-2.88L20 10V4zm-4 0H4v6l2.29-2.29 4.71 4.7V20h2v-8.41l-5.29-5.3z"/></svg> Follow-Up Workflow</a>
+        <a class="hs-link" href="https://app.hubspot.com/contacts/245216884/objects/0-1/views/all/list" target="_blank"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg> All Contacts</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== CONTACTS TAB ========== -->
+  <div class="content tab-panel" id="tab-contacts">
+    <div class="stats">
+      <div class="stat"><div class="stat-label">Total</div><div class="stat-num">23,140</div><div class="stat-sub">HubSpot database</div></div>
+      <div class="stat"><div class="stat-label">Hot</div><div class="stat-num c-green">1,809</div><div class="stat-sub">7.8% of total</div></div>
+      <div class="stat"><div class="stat-label">Warm</div><div class="stat-num c-amber">7,096</div><div class="stat-sub">30.7% of total</div></div>
+      <div class="stat"><div class="stat-label">Cold</div><div class="stat-num c-blue">7,645</div><div class="stat-sub">33.0% of total</div></div>
+      <div class="stat"><div class="stat-label">In Sequences</div><div class="stat-num c-purple">524</div><div class="stat-sub">Currently enrolled</div></div>
+    </div>
+
+    <div class="grid-2">
+      <!-- Data Health -->
+      <div class="card">
+        <div class="card-head"><h3>Contact Data Health</h3><span class="badge b-amber">Gaps Found</span></div>
+        <div class="bar-group">
+          <div class="bar-item"><div class="bar-top"><span>Has Phone</span><span style="color:var(--green)">20,721 (89.5%)</span></div><div class="bar-track"><div class="bar-fill" style="width:89.5%;background:var(--green)"></div></div></div>
+          <div class="bar-item"><div class="bar-top"><span>Has Specialty</span><span style="color:var(--green)">16,917 (73.1%)</span></div><div class="bar-track"><div class="bar-fill" style="width:73.1%;background:var(--green)"></div></div></div>
+          <div class="bar-item"><div class="bar-top"><span>Has Priority Set</span><span style="color:var(--amber)">16,550 (71.5%)</span></div><div class="bar-track"><div class="bar-fill" style="width:71.5%;background:var(--amber)"></div></div></div>
+          <div class="bar-item"><div class="bar-top"><span>Has Territory</span><span style="color:var(--amber)">16,181 (69.9%)</span></div><div class="bar-track"><div class="bar-fill" style="width:69.9%;background:var(--amber)"></div></div></div>
+          <div class="bar-item"><div class="bar-top"><span>Has Email</span><span style="color:var(--amber)">14,790 (63.9%)</span></div><div class="bar-track"><div class="bar-fill" style="width:63.9%;background:var(--amber)"></div></div></div>
+          <div class="bar-item"><div class="bar-top"><span>Salesforce Excluded</span><span style="color:var(--red)">Pending upload</span></div><div class="bar-track"><div class="bar-fill" style="width:0%;background:var(--red)"></div></div></div>
+        </div>
+      </div>
+
+      <!-- Specialty Breakdown -->
+      <div class="card">
+        <div class="card-head"><h3>Specialty Breakdown</h3><span class="badge b-purple">16,917 Tagged</span><a class="hs-link" href="https://app.hubspot.com/contacts/245216884/objects/0-1/views/all/list" target="_blank" style="margin-left:8px"><svg viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg> View Contacts</a></div>
+        <div class="bar-group">
+          <div class="bar-item"><div class="bar-top"><span>Optometry</span><span>2,868</span></div><div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--blue)"></div></div></div>
+          <div class="bar-item"><div class="bar-top"><span>Weight Loss</span><span>1,081</span></div><div class="bar-track"><div class="bar-fill" style="width:37.7%;background:var(--green)"></div></div></div>
+          <div class="bar-item"><div class="bar-top"><span>Medical Spa</span><span>519</span></div><div class="bar-track"><div class="bar-fill" style="width:18.1%;background:var(--accent)"></div></div></div>
+          <div class="bar-item"><div class="bar-top"><span>Plastic Surgery</span><span>461</span></div><div class="bar-track"><div class="bar-fill" style="width:16.1%;background:var(--amber)"></div></div></div>
+          <div class="bar-item"><div class="bar-top"><span>Cosmetic Dental</span><span>220</span></div><div class="bar-track"><div class="bar-fill" style="width:7.7%;background:#ec4899"></div></div></div>
+          <div class="bar-item"><div class="bar-top"><span>Other Specialties</span><span>11,768</span></div><div class="bar-track"><div class="bar-fill" style="width:100%;background:#d1d5db"></div></div></div>
+          <div class="bar-item"><div class="bar-top"><span style="color:var(--red)">Missing Specialty</span><span style="color:var(--red)">6,223</span></div><div class="bar-track"><div class="bar-fill" style="width:36.8%;background:var(--red)"></div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Contacts Table -->
+    <div class="card" style="margin-top:16px">
+      <div class="card-head"><h3>Hot Leads — Not Yet in Sequence</h3><span class="badge b-green">Ready for Outreach</span></div>
+      <div class="tbl-head" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell">Name</span><span class="tbl-cell">Company</span><span class="tbl-cell">City</span><span class="tbl-cell">Specialty</span><span class="tbl-cell">Status</span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/440964689594" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Mauricio Giraldo</a></span><span class="tbl-cell">Medilaser</span><span class="tbl-cell">Frisco, TX</span><span class="tbl-cell" style="color:var(--text-muted)">Plastic Surg</span><span class="tbl-cell"><span class="badge b-green">Not enrolled</span></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462195207923" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Them Tammy Vu</a></span><span class="tbl-cell">Best Optical</span><span class="tbl-cell">Plano, TX</span><span class="tbl-cell" style="color:var(--text-muted)">Plastic Surg</span><span class="tbl-cell"><span class="badge b-green">Not enrolled</span></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462195208903" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Geoff Scott</a></span><span class="tbl-cell">Brenda Coley, AUD</span><span class="tbl-cell">N. Richland Hills</span><span class="tbl-cell" style="color:var(--text-muted)">Med Spa</span><span class="tbl-cell"><span class="badge b-green">Not enrolled</span></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462259898084" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Andr&eacute; Muller</a></span><span class="tbl-cell">CloZet Therapy &amp; Beauty</span><span class="tbl-cell">Red Oak, TX</span><span class="tbl-cell" style="color:var(--text-muted)">Med Spa</span><span class="tbl-cell"><span class="badge b-green">Not enrolled</span></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462270142196" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Arnold J. Morris</a></span><span class="tbl-cell">The Preserve Med Spa</span><span class="tbl-cell">Fort Worth, TX</span><span class="tbl-cell" style="color:var(--text-muted)">Med Spa</span><span class="tbl-cell"><span class="badge b-green">Not enrolled</span></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462259898068" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Shamekia Wells</a></span><span class="tbl-cell">Bareface-Beauty Medspa</span><span class="tbl-cell">Dallas, TX</span><span class="tbl-cell" style="color:var(--text-muted)">Med Spa</span><span class="tbl-cell"><span class="badge b-green">Not enrolled</span></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462267942603" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Jen Garrett</a></span><span class="tbl-cell">Skin Body &amp; Soul Med Studio</span><span class="tbl-cell">Burleson, TX</span><span class="tbl-cell" style="color:var(--text-muted)">Med Spa</span><span class="tbl-cell"><span class="badge b-green">Not enrolled</span></span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462230935286" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Doohi Lee</a></span><span class="tbl-cell">Mary Caire MD</span><span class="tbl-cell">Plano, TX</span><span class="tbl-cell" style="color:var(--text-muted)">Plastic Surg</span><span class="tbl-cell"><span class="badge b-green">Not enrolled</span></span></div>
+      <div style="padding:10px 16px;font-size:12px;color:var(--text-muted);border-top:1px solid var(--border-light)">Showing 8 of 1,809 hot leads not yet enrolled &middot; Names link to HubSpot &middot; <em>Ask me to filter by city, specialty, or territory</em></div>
+    </div>
+
+    <!-- Territory Flags -->
+    <div class="card" style="margin-top:16px">
+      <div class="card-head"><h3>Territory Flags</h3><span class="badge b-amber">Review Needed</span></div>
+      <div class="tbl-head" style="grid-template-columns:2fr 2fr 1fr 1fr 2fr; display:grid;"><span class="tbl-cell">Name</span><span class="tbl-cell">Company</span><span class="tbl-cell">City</span><span class="tbl-cell">Priority</span><span class="tbl-cell">Flag</span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr 2fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462135842547" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Desiree Durham</a></span><span class="tbl-cell">Truebeautybydee</span><span class="tbl-cell">El Paso, TX</span><span class="tbl-cell"><span class="badge b-green">Hot</span></span><span class="tbl-cell" style="color:var(--red);font-size:12px">El Paso may be outside territory</span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr 2fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462270142152" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Tamara Dutter</a></span><span class="tbl-cell">Holos Medical Spa LLC</span><span class="tbl-cell">Waco, TX</span><span class="tbl-cell"><span class="badge b-green">Hot</span></span><span class="tbl-cell" style="color:var(--red);font-size:12px">Waco may be outside territory</span></div>
+      <div class="tbl-row" style="grid-template-columns:2fr 2fr 1fr 1fr 2fr; display:grid;"><span class="tbl-cell"><a href="https://app.hubspot.com/contacts/245216884/record/0-1/462228615890" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">Daniel Shamir</a></span><span class="tbl-cell">Look nice &oacute;pticos</span><span class="tbl-cell">El Paso, TX</span><span class="tbl-cell"><span class="badge b-gray">Cold</span></span><span class="tbl-cell" style="color:var(--amber);font-size:12px">El Paso — in sequence, verify territory</span></div>
+      <div style="padding:10px 16px;font-size:12px;color:var(--text-muted);border-top:1px solid var(--border-light)">Contacts tagged n_texas but in cities that may fall outside DFW/Midland-Odessa &middot; <em>Confirm territory boundaries to resolve</em></div>
+    </div>
+  </div>
+
+  <!-- ========== ACTIONS TAB ========== -->
+  <div class="content tab-panel" id="tab-actions">
+    <div class="card">
+      <div class="card-head"><h3>Action Items</h3><span class="badge b-purple">6 Open</span></div>
+      <div class="action-row"><div class="action-bar" style="background:var(--red)"></div><span class="action-text">Share Salesforce exclusion list (CSV or XLSX export)</span><span class="action-owner o-you">You</span></div>
+      <div class="action-row"><div class="action-bar" style="background:var(--red)"></div><span class="action-text">Share brand assets (email templates, flyers, guidelines)</span><span class="action-owner o-you">You</span></div>
+      <div class="action-row"><div class="action-bar" style="background:var(--amber)"></div><span class="action-text">Review Dental sequence: 7.9% bounce rate needs enrichment</span><span class="action-owner o-intel">Intelligence</span></div>
+      <div class="action-row"><div class="action-bar" style="background:var(--amber)"></div><span class="action-text">Approve Dallas event sequence copy (when ready)</span><span class="action-owner o-you">You</span></div>
+      <div class="action-row"><div class="action-bar" style="background:var(--blue)"></div><span class="action-text">Remove rep-led manual steps from Tulsa sequences</span><span class="action-owner o-sales">Sales Ops</span></div>
+      <div class="action-row"><div class="action-bar" style="background:var(--blue)"></div><span class="action-text">Tag 524 enrolled contacts: outreach_type=Event, target_event=Tulsa</span><span class="action-owner o-sales">Sales Ops</span></div>
+    </div>
+  </div>
+
+  <!-- ========== SETUP TAB ========== -->
+  <div class="content tab-panel" id="tab-setup">
+    <div class="card">
+      <div class="card-head"><h3>System Setup Progress</h3><span class="badge b-purple">6/11 Complete</span></div>
+      <div class="chk"><div class="chk-box done">&#10003;</div><span class="chk-done">Project folder structure + CLAUDE.md</span></div>
+      <div class="chk"><div class="chk-box done">&#10003;</div><span class="chk-done">12 marketing skills built and documented</span></div>
+      <div class="chk"><div class="chk-box done">&#10003;</div><span class="chk-done">5 agents configured with department structure</span></div>
+      <div class="chk"><div class="chk-box done">&#10003;</div><span class="chk-done">Operational rules (territory, confidentiality, exclusions)</span></div>
+      <div class="chk"><div class="chk-box done">&#10003;</div><span class="chk-done">6 campaign playbooks / SOPs documented</span></div>
+      <div class="chk"><div class="chk-box done">&#10003;</div><span class="chk-done">Command center dashboard</span></div>
+      <div class="chk"><div class="chk-box"></div><span>Salesforce exclusion list uploaded</span><span class="chk-tag" style="background:var(--red-bg);color:var(--red-text)">Urgent</span></div>
+      <div class="chk"><div class="chk-box"></div><span>Brand assets loaded into templates/</span><span class="chk-tag" style="background:var(--red-bg);color:var(--red-text)">Urgent</span></div>
+      <div class="chk"><div class="chk-box"></div><span>Territory map confirmed from account list</span><span class="chk-tag" style="background:var(--amber-bg);color:var(--amber-text)">Medium</span></div>
+      <div class="chk"><div class="chk-box"></div><span>First campaign test run</span></div>
+      <div class="chk"><div class="chk-box"></div><span>Twilio A2P 10DLC registration complete</span></div>
+    </div>
+  </div>
+
+  <!-- ========== GUARDRAILS TAB ========== -->
+  <div class="content tab-panel" id="tab-guardrails">
+    <div class="card">
+      <div class="card-head"><h3>Active Guardrails</h3><span class="badge b-green">All Enforced</span></div>
+      <div class="guard"><span class="guard-ico">&#x1F512;</span> <strong>Confidentiality:</strong>&nbsp; No speaker names, vendor names, or agenda details in outreach without per-campaign approval from you.</div>
+      <div class="guard"><span class="guard-ico">&#x1F4CD;</span> <strong>Territory:</strong>&nbsp; Only OK + assigned TX regions (DFW, Midland/Odessa). All other states and TX regions are off-limits.</div>
+      <div class="guard"><span class="guard-ico">&#x1F6AB;</span> <strong>Exclusions:</strong>&nbsp; Every contact cross-referenced against Salesforce list before outreach. Existing BTL accounts are untouchable.</div>
+      <div class="guard"><span class="guard-ico">1&#xFE0F;&#x20E3;</span> <strong>One Sequence:</strong>&nbsp; HubSpot allows one active sequence per contact. Check before enrolling anyone new.</div>
+      <div class="guard"><span class="guard-ico">&#x1F4C5;</span> <strong>Calendar:</strong>&nbsp; Never auto-create calendar events. Draft confirmation email; you create the invite.</div>
+      <div class="guard"><span class="guard-ico">&#x2705;</span> <strong>Approval:</strong>&nbsp; All outreach requires your sign-off before launch. No exceptions.</div>
+      <div class="guard"><span class="guard-ico">&#x1F441;</span> <strong>Branding:</strong>&nbsp; Eye doctors get "The Art of the Eyes"; everyone else gets "The Modern Medicine Symposium."</div>
+      <div class="guard"><span class="guard-ico">&#x270D;&#xFE0F;</span> <strong>Style:</strong>&nbsp; No em dashes. Short paragraphs. Warm peer-level tone. "Bring lunch" not "grab lunch."</div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /layout -->
+
+<script>
+function showTab(name) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('visible'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+  const panel = document.getElementById('tab-' + name);
+  if (panel) panel.classList.add('visible');
+  document.querySelectorAll('.tab').forEach(t => {
+    if (t.textContent.trim().toLowerCase() === name ||
+        (name === 'overview' && t.textContent.trim() === 'Overview') ||
+        (name === 'team' && t.textContent.trim() === 'Team') ||
+        (name === 'sequences' && t.textContent.trim() === 'Sequences') ||
+        (name === 'events' && t.textContent.trim() === 'Events') ||
+        (name === 'pipeline' && t.textContent.trim() === 'Pipeline') ||
+        (name === 'contacts' && t.textContent.trim() === 'Contacts') ||
+        (name === 'actions' && t.textContent.trim() === 'Actions') ||
+        (name === 'setup' && t.textContent.trim() === 'Setup') ||
+        (name === 'guardrails' && t.textContent.trim() === 'Guardrails'))
+      t.classList.add('active');
+  });
+  document.querySelectorAll('.nav-link').forEach(n => {
+    if (n.getAttribute('onclick') === "showTab('" + name + "')") n.classList.add('active');
+  });
+}
+</script>
+</body>
+</html>
