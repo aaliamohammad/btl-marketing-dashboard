@@ -4,7 +4,8 @@
 
 ```
 CEO — Aalia Mohammad
-  └── VP of Sales & Marketing — Sales Dev Agent (always-on coordinator)
+  ├── VP of Sales & Marketing — Sales Dev Agent (always-on coordinator)
+  └── CTO — Engineering Coordinator (always-on, owns all technical systems)
         ├── SALES OPERATIONS DEPARTMENT
         │     ├── Director: Outreach Specialist (owns all email/sequence execution)
         │     └── Skills:
@@ -37,9 +38,15 @@ CEO — Aalia Mohammad
                     ├── HubSpot Data Cleanup
                     ├── Sequence Audit
                     └── Contact Import Prep
+        │
+        └── ENGINEERING DEPARTMENT
+              ├── CTO (Director — coordinates all technical work)
+              ├── Frontend Engineer (dashboard UI, GitHub Pages)
+              ├── Backend Engineer (API integrations, data pipelines)
+              └── DevOps Engineer (CI/CD, GitHub Actions, 24/7 automation)
 ```
 
-## Total Team Size: 6 Agents + 15 Skills
+## Total Team Size: 10 Agents + 15 Skills
 
 | # | Agent | Role | Department | Skills |
 |---|-------|------|------------|--------|
@@ -49,6 +56,10 @@ CEO — Aalia Mohammad
 | 4 | Content Creator | Marketing Specialist | Marketing (reports to ECM) | 3 skills |
 | 5 | Research Analyst | Director of Intelligence | Intelligence | 3 skills |
 | 6 | RevOps Manager | Director of RevOps | RevOps | 3 skills |
+| 7 | CTO | Engineering Coordinator | Engineering | Coordinates engineers |
+| 8 | Frontend Engineer | UI/Dashboard Builder | Engineering | dashboard-builder, component-builder |
+| 9 | Backend Engineer | Integrations & Data | Engineering | api-integration, data-pipeline |
+| 10 | DevOps Engineer | CI/CD & Automation | Engineering | github-actions-builder, cron-scheduler |
 
 ## How It Flows
 
